@@ -3,166 +3,453 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>OceanProxy - 深海加速</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <title>海洋探索 | Ocean Explorer</title>
     <style>
-        body {
+        * {
             margin: 0;
             padding: 0;
-            overflow: hidden;
-            font-family: 'Segoe UI', system-ui, sans-serif;
-            background: linear-gradient(180deg, #0a1428 0%, #1e3a5f 100%);
-            color: #a5d6ff;
+            box-sizing: border-box;
         }
-        
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            min-height: 100vh;
+            background: linear-gradient(180deg, #0c1445 0%, #1a3a5c 30%, #2d6a8e 60%, #4da8c4 100%);
+            overflow-x: hidden;
+            color: #fff;
+        }
+
+        /* 水波动画背景 */
         .ocean-bg {
             position: fixed;
-            top: 0; left: 0; right: 0; bottom: 0;
-            background: linear-gradient(to bottom, rgba(10, 20, 40, 0.8), rgba(30, 58, 95, 0.95));
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
             z-index: -1;
+            overflow: hidden;
         }
 
         .wave {
             position: absolute;
             bottom: 0;
+            left: 0;
             width: 200%;
-            height: 200px;
-            background: linear-gradient(transparent, #3b82f6);
-            animation: wave 12s linear infinite;
-            opacity: 0.6;
+            height: 100px;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 320"><path fill="%23ffffff10" d="M0,192L48,197.3C96,203,192,213,288,229.3C384,245,480,267,576,250.7C672,235,768,181,864,181.3C960,181,1056,235,1152,234.7C1248,235,1344,181,1392,154.7L1440,128L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z"/></svg>') repeat-x;
+            animation: wave 15s linear infinite;
         }
 
-        .wave2 {
-            animation-duration: 18s;
-            opacity: 0.4;
-            bottom: -30px;
+        .wave:nth-child(2) {
+            bottom: 10px;
+            opacity: 0.5;
+            animation: wave 12s linear infinite reverse;
+        }
+
+        .wave:nth-child(3) {
+            bottom: 20px;
+            opacity: 0.3;
+            animation: wave 18s linear infinite;
         }
 
         @keyframes wave {
             0% { transform: translateX(0); }
-            50% { transform: translateX(-50%); }
-            100% { transform: translateX(0); }
+            100% { transform: translateX(-50%); }
         }
 
-        .fish {
+        /* 气泡动画 */
+        .bubbles {
+            position: fixed;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .bubble {
             position: absolute;
-            font-size: 24px;
-            animation: swim 25s linear infinite;
+            bottom: -50px;
+            background: radial-gradient(circle at 30% 30%, rgba(255,255,255,0.4), rgba(255,255,255,0.1));
+            border-radius: 50%;
+            animation: rise 10s infinite ease-in;
+            opacity: 0.6;
+        }
+
+        @keyframes rise {
+            0% {
+                bottom: -50px;
+                transform: translateX(0);
+                opacity: 0.6;
+            }
+            50% {
+                opacity: 0.4;
+            }
+            100% {
+                bottom: 100vh;
+                transform: translateX(100px);
+                opacity: 0;
+            }
+        }
+
+        /* 导航栏 */
+        .navbar {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            padding: 20px 50px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 1000;
+            background: rgba(0,0,0,0.2);
+            backdrop-filter: blur(10px);
+        }
+
+        .logo {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: #7dd3fc;
+            text-shadow: 0 0 20px rgba(125, 211, 252, 0.5);
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 30px;
+        }
+
+        .nav-links a {
+            color: #e0f2fe;
+            text-decoration: none;
+            font-size: 1rem;
+            transition: all 0.3s;
+            position: relative;
+        }
+
+        .nav-links a:hover {
+            color: #7dd3fc;
+        }
+
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: #7dd3fc;
+            transition: width 0.3s;
+        }
+
+        .nav-links a:hover::after {
+            width: 100%;
+        }
+
+        /* 主内容区 */
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 100px 20px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .hero h1 {
+            font-size: 4rem;
+            margin-bottom: 20px;
+            text-shadow: 0 0 40px rgba(125, 211, 252, 0.6);
+            animation: fadeInUp 1s ease-out;
+        }
+
+        .hero p {
+            font-size: 1.3rem;
+            max-width: 600px;
+            opacity: 0.9;
+            animation: fadeInUp 1s ease-out 0.2s both;
+        }
+
+        .cta-button {
+            margin-top: 40px;
+            padding: 15px 40px;
+            font-size: 1.1rem;
+            background: linear-gradient(135deg, #0ea5e9, #06b6d4);
+            border: none;
+            border-radius: 50px;
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s;
+            animation: fadeInUp 1s ease-out 0.4s both;
+            box-shadow: 0 10px 30px rgba(14, 165, 233, 0.4);
+        }
+
+        .cta-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 40px rgba(14, 165, 233, 0.6);
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* 特色内容区 */
+        .features {
+            padding: 100px 50px;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 40px;
+            max-width: 1400px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 1;
+        }
+
+        .feature-card {
+            background: rgba(255,255,255,0.1);
+            backdrop-filter: blur(20px);
+            border-radius: 20px;
+            padding: 40px;
+            text-align: center;
+            transition: all 0.3s;
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+
+        .feature-card:hover {
+            transform: translateY(-10px);
+            background: rgba(255,255,255,0.15);
+            box-shadow: 0 20px 50px rgba(0,0,0,0.3);
+        }
+
+        .feature-icon {
+            font-size: 4rem;
+            margin-bottom: 20px;
+        }
+
+        .feature-card h3 {
+            font-size: 1.5rem;
+            margin-bottom: 15px;
+            color: #7dd3fc;
+        }
+
+        .feature-card p {
+            opacity: 0.8;
+            line-height: 1.6;
+        }
+
+        /* 海洋生物展示 */
+        .creatures {
+            padding: 100px 50px;
+            text-align: center;
+            position: relative;
+            z-index: 1;
+        }
+
+        .creatures h2 {
+            font-size: 2.5rem;
+            margin-bottom: 50px;
+            color: #7dd3fc;
+        }
+
+        .creature-grid {
+            display: flex;
+            justify-content: center;
+            gap: 60px;
+            flex-wrap: wrap;
+        }
+
+        .creature {
+            text-align: center;
+            transition: transform 0.3s;
+        }
+
+        .creature:hover {
+            transform: scale(1.1);
+        }
+
+        .creature-emoji {
+            font-size: 5rem;
+            display: block;
+            margin-bottom: 15px;
+            animation: float 3s ease-in-out infinite;
+        }
+
+        .creature:nth-child(2) .creature-emoji { animation-delay: 0.5s; }
+        .creature:nth-child(3) .creature-emoji { animation-delay: 1s; }
+        .creature:nth-child(4) .creature-emoji { animation-delay: 1.5s; }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-15px); }
+        }
+
+        .creature-name {
+            font-size: 1.2rem;
+            color: #e0f2fe;
+        }
+
+        /* 页脚 */
+        footer {
+            background: rgba(0,0,0,0.3);
+            padding: 40px;
+            text-align: center;
+            position: relative;
+            z-index: 1;
+        }
+
+        footer p {
             opacity: 0.7;
         }
 
-        @keyframes swim {
-            0% { transform: translateX(-150px); }
-            100% { transform: translateX(calc(100vw + 150px)); }
-        }
+        /* 响应式 */
+        @media (max-width: 768px) {
+            .navbar {
+                padding: 15px 20px;
+            }
 
-        .title-glow {
-            text-shadow: 0 0 30px #60a5fa, 0 0 60px #3b82f6;
+            .logo {
+                font-size: 1.4rem;
+            }
+
+            .nav-links {
+                gap: 15px;
+            }
+
+            .hero h1 {
+                font-size: 2.5rem;
+            }
+
+            .hero p {
+                font-size: 1rem;
+            }
+
+            .features {
+                padding: 50px 20px;
+            }
+
+            .creatures {
+                padding: 50px 20px;
+            }
         }
     </style>
 </head>
-<body class="min-h-screen flex items-center justify-center relative">
-    <div class="ocean-bg"></div>
-
-    <!-- 动态波浪 -->
-    <div class="wave" style="left: -50%;"></div>
-    <div class="wave wave2" style="left: -30%;"></div>
-
-    <div class="max-w-4xl mx-auto text-center px-6 relative z-10">
-        <div class="mb-8">
-            <i class="fas fa-water text-7xl mb-4 text-blue-400"></i>
-        </div>
-        
-        <h1 class="text-6xl md:text-7xl font-bold mb-4 title-glow">OceanProxy</h1>
-        <p class="text-2xl md:text-3xl text-blue-300 mb-8">深海无界 · 极速潜行</p>
-        
-        <div class="bg-white/10 backdrop-blur-lg rounded-3xl p-10 shadow-2xl border border-blue-400/30">
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-10">
-                <div class="text-center">
-                    <div class="text-4xl font-mono font-bold text-emerald-400">45ms</div>
-                    <div class="text-sm uppercase tracking-widest mt-2">平均延迟</div>
-                </div>
-                <div class="text-center">
-                    <div class="text-4xl font-mono font-bold text-sky-400">99.9%</div>
-                    <div class="text-sm uppercase tracking-widest mt-2">可用率</div>
-                </div>
-                <div class="text-center">
-                    <div class="text-4xl font-mono font-bold text-blue-400">∞</div>
-                    <div class="text-sm uppercase tracking-widest mt-2">深海节点</div>
-                </div>
-            </div>
-
-            <a href="#" onclick="alert('已连接到深海节点 saas.sin.fan')" 
-               class="inline-block bg-gradient-to-r from-blue-500 to-cyan-400 hover:from-blue-600 hover:to-cyan-500 text-white font-semibold text-xl px-12 py-5 rounded-2xl transition-all transform hover:scale-105 shadow-lg">
-                <i class="fas fa-bolt mr-3"></i>
-                立即潜入
-            </a>
-
-            <div class="mt-12 text-sm opacity-75">
-                world：<span class="font-mono text-blue-300">billspan><br>
-                基于 Cloudflare 全球深海网络
-            </div>
-        </div>
-
-        <!-- 鱼群 -->
-        <div id="fishes" class="absolute inset-0 pointer-events-none"></div>
+<body>
+    <!-- 水波背景 -->
+    <div class="ocean-bg">
+        <div class="wave"></div>
+        <div class="wave"></div>
+        <div class="wave"></div>
     </div>
 
-    <footer class="absolute bottom-6 text-xs opacity-50 text-center w-full">
-        © 2026 OceanProxy • 深海加速 · 永不浮出
+    <!-- 气泡 -->
+    <div class="bubbles" id="bubbles"></div>
+
+    <!-- 导航栏 -->
+    <nav class="navbar">
+        <div class="logo">Ocean Explorer</div>
+        <div class="nav-links">
+            <a href="#home">首页</a>
+            <a href="#features">探索</a>
+            <a href="#creatures">生物</a>
+            <a href="#about">关于</a>
+        </div>
+    </nav>
+
+    <!-- 主内容 -->
+    <section class="hero" id="home">
+        <h1>探索神秘海洋</h1>
+        <p>深入了解地球最后的前沿 - 海洋。这里有无数未知的奥秘等待我们去发现，从浅海珊瑚礁到深海热泉，每一个角落都充满惊喜。</p>
+        <button class="cta-button">开始探索</button>
+    </section>
+
+    <!-- 特色内容 -->
+    <section class="features" id="features">
+        <div class="feature-card">
+            <div class="feature-icon">珊瑚礁</div>
+            <h3>珊瑚礁生态</h3>
+            <p>珊瑚礁是海洋中最丰富的生态系统之一，被称为"海洋中的热带雨林"，为无数海洋生物提供栖息地。</p>
+        </div>
+        <div class="feature-card">
+            <div class="feature-icon">深海探索</div>
+            <h3>深海奥秘</h3>
+            <p>深海是地球上最神秘的地方之一，那里有奇特的生物和极端的环境，等待我们去探索。</p>
+        </div>
+        <div class="feature-card">
+            <div class="feature-icon">海洋保护</div>
+            <h3>保护海洋</h3>
+            <p>海洋面临污染、过度捕捞等威胁，保护海洋生态系统是我们每个人的责任。</p>
+        </div>
+    </section>
+
+    <!-- 海洋生物 -->
+    <section class="creatures" id="creatures">
+        <h2>海洋生物</h2>
+        <div class="creature-grid">
+            <div class="creature">
+                <span class="creature-emoji">🐋</span>
+                <div class="creature-name">蓝鲸</div>
+            </div>
+            <div class="creature">
+                <span class="creature-emoji">🐙</span>
+                <div class="creature-name">章鱼</div>
+            </div>
+            <div class="creature">
+                <span class="creature-emoji">🦈</span>
+                <div class="creature-name">鲨鱼</div>
+            </div>
+            <div class="creature">
+                <span class="creature-emoji">🐢</span>
+                <div class="creature-name">海龟</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 页脚 -->
+    <footer id="about">
+        <p>Ocean Explorer - 探索海洋的奥秘</p>
+        <p style="margin-top: 10px; opacity: 0.5;">© 2026 All Rights Reserved</p>
     </footer>
 
     <script>
-        // 生成随机鱼群
-        function createFish() {
-            const fishContainer = document.getElementById('fishes');
-            for (let i = 0; i < 12; i++) {
-                const fish = document.createElement('div');
-                fish.className = 'fish';
-                fish.textContent = ['🐟', '🐠', '🐡', '🦈'][Math.floor(Math.random()*4)];
-                fish.style.top = Math.random() * 70 + '%';
-                fish.style.animationDuration = (20 + Math.random() * 25) + 's';
-                fish.style.animationDelay = '-' + Math.random() * 30 + 's';
-                fish.style.opacity = 0.4 + Math.random() * 0.5;
-                fishContainer.appendChild(fish);
+        // 动态生成气泡
+        function createBubbles() {
+            const container = document.getElementById('bubbles');
+            const bubbleCount = 20;
+
+            for (let i = 0; i < bubbleCount; i++) {
+                const bubble = document.createElement('div');
+                bubble.className = 'bubble';
+                const size = Math.random() * 40 + 10;
+                bubble.style.width = size + 'px';
+                bubble.style.height = size + 'px';
+                bubble.style.left = Math.random() * 100 + '%';
+                bubble.style.animationDuration = Math.random() * 10 + 8 + 's';
+                bubble.style.animationDelay = Math.random() * 5 + 's';
+                container.appendChild(bubble);
             }
         }
 
-        // 简单点击波纹效果
-        document.addEventListener('click', function(e) {
-            if (Math.random() > 0.7) {
-                const ripple = document.createElement('div');
-                ripple.style.position = 'fixed';
-                ripple.style.border = '2px solid rgba(147, 197, 253, 0.6)';
-                ripple.style.borderRadius = '50%';
-                ripple.style.left = e.clientX + 'px';
-                ripple.style.top = e.clientY + 'px';
-                ripple.style.width = '20px';
-                ripple.style.height = '20px';
-                ripple.style.transform = 'translate(-50%, -50%)';
-                ripple.style.animation = 'ripple 1.5s forwards';
-                document.body.appendChild(ripple);
-                
-                setTimeout(() => ripple.remove(), 1500);
-            }
+        createBubbles();
+
+        // 平滑滚动
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                document.querySelector(this.getAttribute('href')).scrollIntoView({
+                    behavior: 'smooth'
+                });
+            });
         });
-
-        // 添加水波动画样式
-        const style = document.createElement('style');
-        style.innerHTML = `
-            @keyframes ripple {
-                to {
-                    width: 300px;
-                    height: 300px;
-                    opacity: 0;
-                }
-            }
-        `;
-        document.head.appendChild(style);
-
-        // 初始化
-        window.onload = createFish;
     </script>
 </body>
 </html>
