@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OceanProxy - 深海加速</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            font-family: 'Segoe UI', system-ui, sans-serif;
+            background: linear-gradient(180deg, #0a1428 0%, #1e3a5f 100%);
+            color: #a5d6ff;
+        }
+        
+        .ocean-bg {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: linear-gradient(to bottom, rgba(10, 20, 40, 0.8), rgba(30, 58, 95, 0.95));
+            z-index: -1;
+        }
+
+        .wave {
+            position: absolute;
+            bottom: 0;
+            width: 200%;
+            height: 200px;
+            background: linear-gradient(transparent, #3b82f6);
+            animation: wave 12s linear infinite;
+            opacity: 0.6;
+        }
+
+        .wave2 {
+            animation-duration: 18s;
+            opacity: 0.4;
+            bottom: -30px;
+        }
+
+        @keyframes wave {
+            0% { transform: translateX(0); }
+            50% { transform: translateX(-50%); }
+            100% { transform: translateX(0); }
+        }
+
+        .fish {
+            position: absolute;
+            font-size: 24px;
+            animation: swim 25s linear infinite;
+            opacity: 0.7;
+        }
+
+        @keyframes swim {
+            0% { transform: translateX(-150px); }
+            100% { transform: translateX(calc(100vw + 150px)); }
+        }
+
+        .title-glow {
+            text-shadow: 0 0 30px #60a5fa, 0 0 60px #3b82f6;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex items-center justify-center relative">
+    <div class="ocean-bg"></div>
+
+    <!-- 动态波浪 -->
+    <div class="wave" style="left: -50%;"></div>
+    <div class="wave wave2" style="left: -30%;"></div>
+
+    <div class="max-w-4xl mx-auto text-center px-6 relative z-10">
+        <div class="mb-8">
+            <i class="fas fa-water text-7xl mb-4 text-blue-400"></i>
+        </div>
+        
+        <h1 class="text-6xl md:text-7xl font-bold mb-4 title-glow">OceanProxy</h1>
+        <p class="text-2xl md:text-3xl text-blue-300 mb-8">深海无界 · 极速潜行</p>
+        
+        <div class="bg-white/10 backdrop-blur-lg rounded-3xl p-10 shadow-2xl border border-blue-400/30">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-10">
+                <div class="text-center">
+                    <div class="text-4xl font-mono font-bold text-emerald-400">45ms</div>
+                    <div class="text-sm uppercase tracking-widest mt-2">平均延迟</div>
+                </div>
+                <div class="text-center">
+                    <div class="text-4xl font-mono font-bold text-sky-400">99.9%</div>
+                    <div class="text-sm uppercase tracking-widest mt-2">可用率</div>
+                </div>
+                <div class="text-center">
+                    <div class="text-4xl font-mono font-bold text-blue-400">∞</div>
+                    <div class="text-sm uppercase tracking-widest mt-2">深海节点</div>
+                </div>
+            </div>
+
+            <a href="#" onclick="alert('已连接到深海节点 saas.sin.fan')" 
+               class="inline-block bg-gradient-to-r from-blue-500 to-cyan-400 hover:from-blue-600 hover:to-cyan-500 text-white font-semibold text-xl px-12 py-5 rounded-2xl transition-all transform hover:scale-105 shadow-lg">
+                <i class="fas fa-bolt mr-3"></i>
+                立即潜入
+            </a>
+
+            <div class="mt-12 text-sm opacity-75">
+                world：<span class="font-mono text-blue-300">billspan><br>
+                基于 Cloudflare 全球深海网络
+            </div>
+        </div>
+
+        <!-- 鱼群 -->
+        <div id="fishes" class="absolute inset-0 pointer-events-none"></div>
+    </div>
+
+    <footer class="absolute bottom-6 text-xs opacity-50 text-center w-full">
+        © 2026 OceanProxy • 深海加速 · 永不浮出
+    </footer>
+
+    <script>
+        // 生成随机鱼群
+        function createFish() {
+            const fishContainer = document.getElementById('fishes');
+            for (let i = 0; i < 12; i++) {
+                const fish = document.createElement('div');
+                fish.className = 'fish';
+                fish.textContent = ['🐟', '🐠', '🐡', '🦈'][Math.floor(Math.random()*4)];
+                fish.style.top = Math.random() * 70 + '%';
+                fish.style.animationDuration = (20 + Math.random() * 25) + 's';
+                fish.style.animationDelay = '-' + Math.random() * 30 + 's';
+                fish.style.opacity = 0.4 + Math.random() * 0.5;
+                fishContainer.appendChild(fish);
+            }
+        }
+
+        // 简单点击波纹效果
+        document.addEventListener('click', function(e) {
+            if (Math.random() > 0.7) {
+                const ripple = document.createElement('div');
+                ripple.style.position = 'fixed';
+                ripple.style.border = '2px solid rgba(147, 197, 253, 0.6)';
+                ripple.style.borderRadius = '50%';
+                ripple.style.left = e.clientX + 'px';
+                ripple.style.top = e.clientY + 'px';
+                ripple.style.width = '20px';
+                ripple.style.height = '20px';
+                ripple.style.transform = 'translate(-50%, -50%)';
+                ripple.style.animation = 'ripple 1.5s forwards';
+                document.body.appendChild(ripple);
+                
+                setTimeout(() => ripple.remove(), 1500);
+            }
+        });
+
+        // 添加水波动画样式
+        const style = document.createElement('style');
+        style.innerHTML = `
+            @keyframes ripple {
+                to {
+                    width: 300px;
+                    height: 300px;
+                    opacity: 0;
+                }
+            }
+        `;
+        document.head.appendChild(style);
+
+        // 初始化
+        window.onload = createFish;
+    </script>
+</body>
+</html>
